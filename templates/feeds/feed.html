@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Social Learning Feed</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial,sans-serif;
+        }
+
+        body{
+            background:#f0f2f5;
+            display:flex;
+            justify-content:center;
+        }
+
+        .main-container{
+            width:100%;
+            max-width:750px;
+        }
+
+        /* TOP HEADER */
+
+        .top-header{
+            position:sticky;
+            top:0;
+            z-index:100;
+            background:white;
+            padding:15px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .logo{
+            font-size:24px;
+            font-weight:bold;
+            color:#1877f2;
+            margin-bottom:15px;
+        }
+
+        .search-box{
+            width:100%;
+        }
+
+        .search-box input{
+            width:100%;
+            padding:14px 18px;
+            border:none;
+            border-radius:30px;
+            background:#f0f2f5;
+            outline:none;
+            font-size:15px;
+        }
+
+        /* FEED */
+
+        .feed-container{
+            padding:15px 10px;
+        }
+
+        .post{
+            background:white;
+            border-radius:18px;
+            overflow:hidden;
+            margin-bottom:20px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .post-header{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            padding:15px;
+        }
+
+        .profile{
+            width:52px;
+            height:52px;
+            border-radius:50%;
+            background:#1877f2;
+            color:white;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:20px;
+            font-weight:bold;
+            flex-shrink:0;
+        }
+
+        .post-title{
+            font-size:18px;
+            font-weight:bold;
+            color:#111;
+        }
+
+        .post-time{
+            color:gray;
+            font-size:13px;
+            margin-top:4px;
+        }
+
+        .category-box{
+            display:flex;
+            gap:10px;
+            padding:0 15px 15px;
+            flex-wrap:wrap;
+        }
+
+        .category{
+            background:#e7f3ff;
+            color:#1877f2;
+            padding:7px 14px;
+            border-radius:20px;
+            font-size:13px;
+            font-weight:600;
+        }
+
+        .subcategory{
+            background:#f5f5f5;
+            color:#333;
+            padding:7px 14px;
+            border-radius:20px;
+            font-size:13px;
+            font-weight:600;
+        }
+
+        .post-description{
+            padding:0 15px 15px;
+            line-height:1.7;
+            color:#333;
+            font-size:15px;
+        }
+
+        .media{
+            width:100%;
+            background:black;
+            position:relative;
+        }
+
+        .media img{
+            width:100%;
+            max-height:750px;
+            object-fit:cover;
+        }
+
+        video{
+            width:100%;
+            max-height:750px;
+            background:black;
+        }
+
+        .pdf-viewer{
+            width:100%;
+            height:700px;
+            background:#222;
+        }
+
+        .fullscreen-btn{
+            position:absolute;
+            top:15px;
+            right:15px;
+            background:white;
+            border:none;
+            padding:10px 16px;
+            border-radius:10px;
+            cursor:pointer;
+            font-weight:bold;
+            z-index:10;
+            box-shadow:0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .tag-container{
+            padding:15px;
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+
+        .tag{
+            background:#eef3ff;
+            color:#1877f2;
+            padding:6px 12px;
+            border-radius:20px;
+            font-size:13px;
+            font-weight:600;
+        }
+
+        .actions{
+            display:flex;
+            border-top:1px solid #eee;
+        }
+
+        .actions button{
+            flex:1;
+            padding:14px;
+            border:none;
+            background:white;
+            cursor:pointer;
+            font-size:15px;
+            font-weight:600;
+            transition:0.2s;
+        }
+
+        .actions button:hover{
+            background:#f5f5f5;
+        }
+
+        .empty-feed{
+            text-align:center;
+            padding:40px;
+            color:gray;
+            font-size:18px;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:768px){
+
+            body{
+                background:white;
+            }
+
+            .feed-container{
+                padding:0;
+            }
+
+            .post{
+                border-radius:0;
+                margin-bottom:10px;
+            }
+
+            .top-header{
+                border-radius:0;
+            }
+
+            .pdf-viewer{
+                height:500px;
+            }
+
+            .post-title{
+                font-size:16px;
+            }
+
+            .post-description{
+                font-size:14px;
+            }
+
+            .actions button{
+                font-size:14px;
+                padding:12px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="main-container">
+
+    <!-- TOP HEADER -->
+
+    <div class="top-header">
+
+        <div class="logo">
+            Social Learning
+        </div>
+
+        <form method="GET">
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search feeds..."
+                    value="{{ request.GET.search }}"
+                >
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- FEEDS -->
+
+    <div class="feed-container">
+
+        {% for feed in feeds %}
+
+        <div class="post">
+
+            <!-- HEADER -->
+
+            <div class="post-header">
+
+                <div class="profile">
+
+                    {{ feed.title|first|upper }}
+
+                </div>
+
+                <div>
+
+                    <div class="post-title">
+
+                        {{ feed.title }}
+
+                    </div>
+
+                    <div class="post-time">
+
+                        {{ feed.created_at }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CATEGORY -->
+
+            <div class="category-box">
+
+                {% if feed.category %}
+
+                    <div class="category">
+
+                        {{ feed.category.name }}
+
+                    </div>
+
+                {% endif %}
+
+                {% if feed.subcategory %}
+
+                    <div class="subcategory">
+
+                        {{ feed.subcategory.name }}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            <!-- DESCRIPTION -->
+
+            <div class="post-description">
+
+                {{ feed.short_description }}
+
+            </div>
+
+            <!-- MEDIA -->
+
+            {% for media in feed.media_files.all %}
+
+                <div class="media">
+
+                    {% if media.media_type == 'image' %}
+
+                        <img src="{{ media.file.url }}">
+
+                    {% endif %}
+
+                    {% if media.media_type == 'video' %}
+
+                        <video
+                            controls
+                            muted
+                            playsinline
+                        >
+
+                            <source src="{{ media.file.url }}">
+
+                        </video>
+
+                    {% endif %}
+
+                    {% if media.media_type == 'pdf' %}
+
+    <button
+        class="fullscreen-btn"
+        onclick="window.open('{{ media.file.url }}')"
+    >
+        Full Screen
+    </button>
+
+    <iframe
+        src="https://docs.google.com/gview?embedded=true&url={{ request.scheme }}://{{ request.get_host }}{{ media.file.url }}"
+        class="pdf-viewer"
+    >
+    </iframe>
+
+{% endif %}
+
+                </div>
+
+            {% endfor %}
+
+            <!-- TAGS -->
+
+            <div class="tag-container">
+
+                {% for tag in feed.tags.all %}
+
+                    <div class="tag">
+
+                        #{{ tag.name }}
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- ACTIONS -->
+
+            <div class="actions">
+
+                <button>👍 Like</button>
+
+                <button>💬 Comment</button>
+
+                <button>↗ Share</button>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+            <div class="empty-feed">
+
+                No feeds found.
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
